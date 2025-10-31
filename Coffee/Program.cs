@@ -1,4 +1,5 @@
 using Coffee.Extensions;
+using Coffee.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddRepositories()
     .AddApplicationServices();
+//Đăng ký auto mapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 
 var app = builder.Build();
 
