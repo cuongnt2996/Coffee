@@ -1,3 +1,4 @@
+using AutoMapper;
 using Coffee.Models;
 using Coffee.Models.DTOs;
 using Coffee.Repositories;
@@ -8,11 +9,12 @@ public class EmployeeService : IEmployeeService
 {
     private readonly IEmployeeRepository _employeeRepository;
     private readonly ILogger<EmployeeService> _logger;
-
-    public EmployeeService(IEmployeeRepository employeeRepository, ILogger<EmployeeService> logger)
+    private readonly IMapper _mapper;
+    public EmployeeService(IEmployeeRepository employeeRepository, ILogger<EmployeeService> logger, IMapper mapper)
     {
         _employeeRepository = employeeRepository;
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeRequest request)
@@ -23,25 +25,29 @@ public class EmployeeService : IEmployeeService
             throw new InvalidOperationException($"Employee with code {request.EmployeeCode} already exists");
         }
 
-        var employee = new Employee
-        {
-            EmployeeCode = request.EmployeeCode,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            DateOfBirth = request.DateOfBirth,
-            PhoneNumber = request.PhoneNumber,
-            Address = request.Address,
-            Department = request.Department,
-            Position = request.Position,
-            Salary = request.Salary,
-            JoinDate = DateTime.UtcNow,
-            Status = "Active"
-        };
+        // var employee = new Employee
+        // {
+        //     EmployeeCode = request.EmployeeCode,
+        //     FirstName = request.FirstName,
+        //     LastName = request.LastName,
+        //     DateOfBirth = request.DateOfBirth,
+        //     PhoneNumber = request.PhoneNumber,
+        //     Address = request.Address,
+        //     Department = request.Department,
+        //     Position = request.Position,
+        //     Salary = request.Salary,
+        //     JoinDate = DateTime.UtcNow,
+        //     Status = "Active"
+        // };
+        var employee = _mapper.Map<Employee>(request);
+        employee.JoinDate = DateTime.UtcNow;
+        employee.Status = "Active";
 
         await _employeeRepository.AddAsync(employee);
         _logger.LogInformation($"Created new employee with code {employee.EmployeeCode}");
 
-        return ToDto(employee);
+        // return ToDto(employee);
+        return _mapper.Map<EmployeeDto>(employee);
     }
 
     public async Task<EmployeeDto?> GetEmployeeAsync(int id)
