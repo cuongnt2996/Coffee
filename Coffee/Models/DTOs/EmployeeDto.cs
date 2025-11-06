@@ -8,6 +8,7 @@ public class EmployeeDto
     public string PhoneNumber { get; set; } = null!;
     public string Department { get; set; } = null!;
     public string Position { get; set; } = null!;
+    public int StatusId { get; set; }
     public string Status { get; set; } = null!;
 }
 
@@ -31,5 +32,5 @@ public class UpdateEmployeeRequest
     public string? Department { get; set; }
     public string? Position { get; set; }
     public decimal Salary { get; set; }
-    public string Status { get; set; } = null!;
+    public int StatusId { get; set; }
 }

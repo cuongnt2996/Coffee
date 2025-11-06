@@ -41,10 +41,10 @@ public class Employee
     
     [Required]
     public decimal Salary { get; set; }
-    
+
     [Required]
-    [MaxLength(20)]
-    public string Status { get; set; } = "Active";
+    public int StatusId { get; set; } = 1;
+    public EmployeeStatus? Status { get; set; }
     
     public DateTime? TerminationDate { get; set; }
 }

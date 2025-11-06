@@ -18,22 +18,28 @@ public class MappingProfile : Profile
         //                                          : string.Empty));
 
     CreateMap<Employee, EmployeeDto>()
-    .ForMember(dest => dest.FullName,
-               opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
-    .ReverseMap()
-    .ForMember(dest => dest.FirstName,
-               opt => opt.MapFrom(src =>
-                   string.IsNullOrWhiteSpace(src.FullName)
-                       ? string.Empty
-                       : src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).First()))
-    .ForMember(dest => dest.LastName,
-               opt => opt.MapFrom(src =>
-                   string.IsNullOrWhiteSpace(src.FullName)
-                       ? string.Empty
-                       : string.Join(" ",
-                           src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1))));
+        .ForMember(dest => dest.FullName,
+                opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
+        .ForMember(dest => dest.Status,
+                opt => opt.MapFrom(src=> src.Status !=null ? src.Status.StatusName : string.Empty))
+        .ReverseMap()
+        .ForMember(dest => dest.FirstName,
+                opt => opt.MapFrom(src =>
+                    string.IsNullOrWhiteSpace(src.FullName)
+                        ? string.Empty
+                        : src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).First()))
+        .ForMember(dest => dest.LastName,
+                opt => opt.MapFrom(src =>
+                    string.IsNullOrWhiteSpace(src.FullName)
+                        ? string.Empty
+                        : string.Join(" ",
+                            src.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1))));
 
+        CreateMap<Employee, CreateEmployeeRequest>().ReverseMap();
 
+        CreateMap<Employee, UpdateEmployeeRequest>().ReverseMap();
+    
+        
 
     }
 }

@@ -12,4 +12,5 @@ public interface IEmployeeService
     Task<IEnumerable<EmployeeDto>> GetActiveEmployeesAsync();
     Task UpdateEmployeeAsync(int id, UpdateEmployeeRequest request);
     Task DeleteEmployeeAsync(int id);
+    Task<IEnumerable<EmployeeStatus>> GetEmployeeStatusesAsync();
 }
