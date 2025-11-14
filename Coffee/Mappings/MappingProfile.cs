@@ -39,7 +39,15 @@ public class MappingProfile : Profile
 
         CreateMap<Employee, UpdateEmployeeRequest>().ReverseMap();
     
-        
-
+    CreateMap<User, UserDto>()
+        .ForMember(dest => dest.FullName,
+        opt => opt.MapFrom(src => src.Employee != null
+        ? src.Employee.FirstName + " " + src.Employee.LastName
+        : string.Empty));
+    CreateMap<UserCreateDto, User>()
+        .ForMember(dest => dest.PasswordHash, opt =>opt.Ignore()); //hash trong service
+        // .ForMember(dest => dest.User)
+    CreateMap<UserUpdateDto,User>()
+        .ForMember(dest=>dest.PasswordHash,opt=>opt.Ignore());
     }
 }
