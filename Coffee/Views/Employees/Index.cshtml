@@ -38,9 +38,10 @@
                                 <td>@item.Position</td>
                                 <td>@item.PhoneNumber</td>
                                 <td>
-                                    <span class="badge @(item.Status == "Active" ? "bg-success" : "bg-secondary")">
+                                    @* <span class="badge @(item.Status == 1 ? "bg-success" : "bg-secondary")">
                                         @item.Status
-                                    </span>
+                                    </span> *@
+                                    @item.Status
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">

@@ -23,6 +23,10 @@ public class EmployeesController : BaseController
         try
         {
             var employees = await _employeeService.GetAllEmployeesAsync();
+            // foreach(var e in employees)
+            // {
+            //     System.Console.WriteLine(e.EmployeeCode);
+            // }
             return View(employees);
         }
         catch (Exception ex)
@@ -98,14 +102,15 @@ public class EmployeesController : BaseController
                 PhoneNumber = employee.PhoneNumber,
                 Department = employee.Department,
                 Position = employee.Position,
-                Status = employee.Status,
+                StatusId = employee.StatusId,
                 Address = "",
                 Salary = 0
             };
+            
 
             ViewData["EmployeeId"] = employee.Id;
             ViewData["EmployeeCode"] = employee.EmployeeCode;
-
+            ViewBag.EmployeeStatus = await _employeeService.GetEmployeeStatusesAsync();
             return View(updateModel);
         }
         catch (Exception ex)

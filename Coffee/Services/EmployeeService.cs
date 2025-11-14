@@ -1,4 +1,5 @@
 using AutoMapper;
+using Azure.Core;
 using Coffee.Models;
 using Coffee.Models.DTOs;
 using Coffee.Repositories;
@@ -17,8 +18,7 @@ public class EmployeeService : IEmployeeService
         _mapper = mapper;
     }
 
-    public async Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeRequest request)
-    {
+    public async Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeRequest request){
         var existing = await _employeeRepository.GetByEmployeeCodeAsync(request.EmployeeCode);
         if (existing != null)
         {
@@ -41,7 +41,7 @@ public class EmployeeService : IEmployeeService
         // };
         var employee = _mapper.Map<Employee>(request);
         employee.JoinDate = DateTime.UtcNow;
-        employee.Status = "Active";
+        employee.StatusId = 1;
 
         await _employeeRepository.AddAsync(employee);
         _logger.LogInformation($"Created new employee with code {employee.EmployeeCode}");
@@ -53,25 +53,25 @@ public class EmployeeService : IEmployeeService
     public async Task<EmployeeDto?> GetEmployeeAsync(int id)
     {
         var employee = await _employeeRepository.GetByIdAsync(id);
-        return employee != null ? ToDto(employee) : null;
+        return employee != null ? _mapper.Map<EmployeeDto>(employee) : null;
     }
 
     public async Task<EmployeeDto?> GetEmployeeByCodeAsync(string code)
     {
         var employee = await _employeeRepository.GetByEmployeeCodeAsync(code);
-        return employee != null ? ToDto(employee) : null;
+        return employee != null ? _mapper.Map<EmployeeDto>(employee) : null;
     }
 
     public async Task<IEnumerable<EmployeeDto>> GetAllEmployeesAsync()
     {
-        var employees = await _employeeRepository.GetAllAsync();
-        return employees.Select(ToDto);
+        var employees = await _employeeRepository.GetAllEmployeeAsync();
+        return employees.Select(_mapper.Map<EmployeeDto>);
     }
 
     public async Task<IEnumerable<EmployeeDto>> GetActiveEmployeesAsync()
     {
         var employees = await _employeeRepository.GetActiveEmployeesAsync();
-        return employees.Select(ToDto);
+        return employees.Select(_mapper.Map<EmployeeDto>);
     }
 
     public async Task UpdateEmployeeAsync(int id, UpdateEmployeeRequest request)
@@ -79,14 +79,16 @@ public class EmployeeService : IEmployeeService
         var employee = await _employeeRepository.GetByIdAsync(id) 
             ?? throw new InvalidOperationException($"Employee with ID {id} not found");
 
-        employee.PhoneNumber = request.PhoneNumber;
-        employee.Address = request.Address;
-        employee.Department = request.Department;
-        employee.Position = request.Position;
-        employee.Salary = request.Salary;
-        employee.Status = request.Status;
+        // employee.PhoneNumber = request.PhoneNumber;
+        // employee.Address = request.Address;
+        // employee.Department = request.Department;
+        // employee.Position = request.Position;
+        // employee.Salary = request.Salary;
+        // employee.Status = request.Status;
 
-        if (request.Status == "Terminated" && employee.TerminationDate == null)
+        _mapper.Map(request, employee);
+
+        if (request.StatusId == 2 && employee.TerminationDate == null)
         {
             employee.TerminationDate = DateTime.UtcNow;
         }
@@ -104,18 +106,29 @@ public class EmployeeService : IEmployeeService
             _logger.LogInformation($"Deleted employee {employee.EmployeeCode}");
         }
     }
-
-    private static EmployeeDto ToDto(Employee employee)
+    public async Task<IEnumerable<EmployeeStatus>> GetEmployeeStatusesAsync()
     {
-        return new EmployeeDto
-        {
-            Id = employee.Id,
-            EmployeeCode = employee.EmployeeCode,
-            FullName = $"{employee.FirstName} {employee.LastName}",
-            PhoneNumber = employee.PhoneNumber,
-            Department = employee.Department ?? "N/A",
-            Position = employee.Position ?? "N/A",
-            Status = employee.Status
-        };
+        return await _employeeRepository.GetEmployeeStatusesAsync();
+        // return  EmployeeStatus;
     }
+
+    // Task<EmployeeDto?> IEmployeeService.GetEmployeeAsync(int id)
+    // {
+    //     throw new NotImplementedException();
+    // }
+
+
+    // private static EmployeeDto ToDto(Employee employee)
+    // {
+    //     return new EmployeeDto
+    //     {
+    //         Id = employee.Id,
+    //         EmployeeCode = employee.EmployeeCode,
+    //         FullName = $"{employee.FirstName} {employee.LastName}",
+    //         PhoneNumber = employee.PhoneNumber,
+    //         Department = employee.Department ?? "N/A",
+    //         Position = employee.Position ?? "N/A",
+    //         Status = employee.Status
+    //     };
+    // }
 }

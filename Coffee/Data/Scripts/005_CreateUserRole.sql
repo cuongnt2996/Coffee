@@ -1,0 +1,8 @@
+CREATE TABLE UserRole (
+    UserId INT NOT NULL,
+    RoleId INT NOT NULL,
+    PRIMARY KEY (UserId, RoleId)
+);
+
+ALTER TABLE UserRole ADD FOREIGN KEY (UserId) REFERENCES [User](UserId);
+ALTER TABLE UserRole ADD FOREIGN KEY (RoleId) REFERENCES Role(RoleId);
